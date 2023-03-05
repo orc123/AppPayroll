@@ -5,16 +5,10 @@ namespace AppPayroll.Service.Implatation;
 
 public class PayrollSerivce : IPayrollSerivce
 {
-    public async Task<ResultModel<PayrollResponseDto>> SaralyPayrollAsync(PayrollRequestDto payrollRequestDto)
+    public async Task<ResultModel<PayrollResponseDto>> SaralyPayrollAsync(PayrollRequestDto request)
     {
-        PayrollResponseDto payrollResponseDto = new PayrollResponseDto()
-        {
-            IncomeBeforeTax = new(),
-            IncomeTaxes = new(),
-            SalaryGross = new(),
-            NetSalary = 0
-        };
-        var validate = ValidateModel(payrollRequestDto);
+        PayrollResponseDto result = null;
+        var validate = ValidateModel(request);
         if (validate != null)
         {
             return new ResultModel<PayrollResponseDto>(validate);
@@ -23,37 +17,74 @@ public class PayrollSerivce : IPayrollSerivce
         double grossSalary = 0;
         double netSalary = 0;
 
-        if (payrollRequestDto.Type == Model.Enums.TypePayroll.GrossToNet)
+        if (request.Type == Model.Enums.TypePayroll.GrossToNet)
         {
-            grossSalary = payrollRequestDto.Wage.Value;
-            payrollResponseDto.SalaryGross.SocialInsurance = grossSalary * 8 / 100;
-            payrollResponseDto.SalaryGross.HealthInsurance = grossSalary * 1.5 / 100;
-            payrollResponseDto.SalaryGross.UnemploymentInsurance = grossSalary * 1 / 100;
-
-            payrollResponseDto.IncomeBeforeTax.IncomeBeforeTaxProterty =
-                grossSalary - (payrollResponseDto.SalaryGross.SocialInsurance + payrollResponseDto.SalaryGross.HealthInsurance /
-                +payrollResponseDto.SalaryGross.UnemploymentInsurance);
-
-            payrollResponseDto.IncomeBeforeTax.PersonalSituation = 11000000;
-            payrollResponseDto.IncomeBeforeTax.DependentsFamily = payrollRequestDto.NumberOfDependents.Value * 44000000;
-
-            payrollResponseDto.IncomeTaxes.IncomeTaxesProperty =
-                payrollResponseDto.IncomeBeforeTax.IncomeBeforeTaxProterty - payrollResponseDto.IncomeBeforeTax.PersonalSituation - payrollResponseDto.IncomeBeforeTax.DependentsFamily
-                 > 0 ? payrollResponseDto.IncomeBeforeTax.IncomeBeforeTaxProterty - payrollResponseDto.IncomeBeforeTax.PersonalSituation - payrollResponseDto.IncomeBeforeTax.DependentsFamily : 0; 
-
-
+            result = GrossToNet(grossSalary, request);
         }
         else
         {
-            netSalary = payrollRequestDto.Wage.Value;
-
-            payrollResponseDto.NetSalary = netSalary;
+            result = NetToGross(netSalary, request);
         }
 
-        return new ResultModel<PayrollResponseDto>(payrollResponseDto);
+        return new ResultModel<PayrollResponseDto>(result);
+    }
+    private PayrollResponseDto GrossToNet(double grossSalary, PayrollRequestDto request)
+    {
+        PayrollResponseDto result = new PayrollResponseDto()
+        {
+            IncomeBeforeTax = new(),
+            IncomeTaxes = new(),
+            SalaryGross = new(),
+            NetSalary = 0
+        };
+        grossSalary = (request.TypeOfInsurance == Model.Enums.TypeOfInsurance.Other && request.OtherSalary.HasValue) ?
+               request.OtherSalary.Value : request.Wage.Value;
+
+        result.SalaryGross.SalaryGrossProterty = grossSalary;
+        result.SalaryGross.SocialInsurance = grossSalary * 8 / 100;
+        result.SalaryGross.HealthInsurance = grossSalary * 1.5 / 100;
+        result.SalaryGross.UnemploymentInsurance = grossSalary / 100;
+
+        result.IncomeBeforeTax.IncomeBeforeTaxProterty =
+            request.Wage.Value - (result.SalaryGross.SocialInsurance + result.SalaryGross.HealthInsurance
+            + result.SalaryGross.UnemploymentInsurance);
+
+        result.IncomeBeforeTax.PersonalSituation = 11000000;
+        result.IncomeBeforeTax.DependentsFamily = request.NumberOfDependents.Value * 44000000;
+
+        result.IncomeTaxes.IncomeTaxesProperty =
+            result.IncomeBeforeTax.IncomeBeforeTaxProterty - result.IncomeBeforeTax.PersonalSituation - result.IncomeBeforeTax.DependentsFamily
+             > 0 ? result.IncomeBeforeTax.IncomeBeforeTaxProterty - result.IncomeBeforeTax.PersonalSituation - result.IncomeBeforeTax.DependentsFamily : 0;
+
+        result.IncomeTaxes.TaxPayment = PersonalIncomeTax(result.IncomeTaxes.IncomeTaxesProperty);
+
+        result.NetSalary = result.IncomeBeforeTax.IncomeBeforeTaxProterty
+             - result.IncomeTaxes.PersonalIncomeTax;
+
+        return result;
     }
 
-    private static ErrorModel? ValidateModel(PayrollRequestDto payrollRequestDto)
+    private PayrollResponseDto NetToGross(double netSalary, PayrollRequestDto request)
+    {
+        PayrollResponseDto result = new PayrollResponseDto()
+        {
+            IncomeBeforeTax = new(),
+            IncomeTaxes = new(),
+            SalaryGross = new(),
+            NetSalary = 0
+        };
+        return result;
+    }
+
+    private double[] PersonalIncomeTax(double incomeTaxesProperty)
+    {
+        double[] taxPayment = new double[] { 0, 0, 0, 0, 0, 0, 0 };
+        double taxPaymentRemain = incomeTaxesProperty - 0;
+        return taxPayment;
+    }
+
+
+     private static ErrorModel? ValidateModel(PayrollRequestDto payrollRequestDto)
     {
         if (payrollRequestDto == null)
         {

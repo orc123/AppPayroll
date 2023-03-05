@@ -60,17 +60,136 @@
                 <InputNumber class="form-control" @bind-Value="payrollRequestDto.NumberOfDependents"></InputNumber>
             </div>
 
+            <br />
+            <br />
+
             <div class="form-group">
-                <button class="btn btn-primary" @onclick="async () => await SubmitPayrollRequest(TypePayroll.GrossToNet)">GROSS -> NET</button>
+                <button class="btn btn-success" @onclick="async () => await SubmitPayrollRequest(TypePayroll.GrossToNet)">GROSS -> NET</button>
                 <button class="btn btn-primary" @onclick="async () => await SubmitPayrollRequest(TypePayroll.NetToGross)">NET -> GROSS</button>
             </div>
         </EditForm>
     }
 </div>
 
-@if (ShowResult && result != null)
-{ 
-    <table>
+@if (ShowResult && result.Data != null)
+{
+    <p class="text-success">Diễn giải chi tiết (VNĐ)</p>
 
+    <br />
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Lương GROSS</th>
+                <th>@result.Data.SalaryGross.SalaryGrossProterty</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Bảo hiểm xã hội (8%)</td>
+                <td> - @result.Data.SalaryGross.SocialInsurance</td>
+            </tr>
+            <tr>
+                <td>Bảo hiểm y tế (1.5%)</td>
+                <td> - @result.Data.SalaryGross.HealthInsurance</td>
+            </tr>
+            <tr>
+                <td>Bảo hiểm thất nghiệp (1%)</td>
+                <td> - @result.Data.SalaryGross.UnemploymentInsurance</td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Thu nhập trước thuế</th>
+                <th>@result.Data.IncomeBeforeTax.IncomeBeforeTaxProterty</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Giảm trừ gia cảnh bản thân</td>
+                <td> - @result.Data.IncomeBeforeTax.PersonalSituation</td>
+            </tr>
+            <tr>
+                <td>Giảm trừ gia cảnh người phụ thuộc</td>
+                <td> - @result.Data.IncomeBeforeTax.PersonalSituation</td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Thu nhập chịu thuế	</th>
+                <th>@result.Data.IncomeTaxes.IncomeTaxesProperty</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Thuế thu nhập cá nhân(*)</td>
+                <td> - @result.Data.IncomeTaxes.PersonalIncomeTax</td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>
+                    Lương NET
+                    <br />
+                    (Thu nhập trước thuế - Thuế thu nhập cá nhân.)
+                </th>
+                <th>@result.Data.NetSalary</th>
+            </tr>
+        </thead>
+    </table>
+
+    <p class="text-success">(*) Chi tiết thuế thu nhập cá nhân (VNĐ)</p>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Mức chịu thuế</th>
+                <th>Thuế suất</th>
+                <th>Tiền nộp</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Đến 5 triệu đồng</td>
+                <td>5%</td>
+                <td>@result.Data.IncomeTaxes.TaxPayment[0]</td>
+            </tr>
+             <tr>
+                <td>Trên 5 triệu VNĐ đến 10 triệu VNĐ	</td>
+                <td>10%</td>
+                <td>@result.Data.IncomeTaxes.TaxPayment[1]</td>
+            </tr>
+             <tr>
+                <td>Trên 10 triệu VNĐ đến 18 triệu VNĐ</td>
+                <td>15%</td>
+                <td>@result.Data.IncomeTaxes.TaxPayment[2]</td>
+            </tr>
+             <tr>
+                <td>Trên 18 triệu VNĐ đến 32 triệu VNĐ</td>
+                <td>20%</td>
+                <td>@result.Data.IncomeTaxes.TaxPayment[3]</td>
+            </tr>
+             <tr>
+                <td>Trên 32 triệu VNĐ đến 52 triệu VNĐ	</td>
+                <td>25%</td>
+                <td>@result.Data.IncomeTaxes.TaxPayment[4]</td>
+            </tr>
+             <tr>
+                <td>Trên 52 triệu VNĐ đến 80 triệu VNĐ	</td>
+                <td>30%</td>
+                <td>@result.Data.IncomeTaxes.TaxPayment[5]</td>
+            </tr>
+            <tr>
+                <td>Trên 80 triệu VNĐ</td>
+                <td>35%</td>
+                <td>@result.Data.IncomeTaxes.TaxPayment[6]</td>
+            </tr>
+
+        </tbody>
     </table>
 }

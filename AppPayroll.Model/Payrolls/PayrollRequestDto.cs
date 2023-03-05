@@ -5,7 +5,7 @@ namespace AppPayroll.Model.Payrolls;
 
 public class PayrollRequestDto
 {
-    public int? Wage { get; set; }
+    public double? Wage { get; set; }
 
     public DateApply? DateApply { get; set; }
     public int? NumberOfDependents { get; set; }

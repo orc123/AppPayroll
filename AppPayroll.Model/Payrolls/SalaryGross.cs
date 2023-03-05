@@ -2,6 +2,7 @@
 
 public class SalaryGross
 {
+    public double SalaryGrossProterty { get; set; }
     // Bảo hiểm xã hội
     public double SocialInsurance { get; set; }
 
