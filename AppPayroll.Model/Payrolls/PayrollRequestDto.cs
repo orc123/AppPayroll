@@ -7,20 +7,12 @@ public class PayrollRequestDto
 {
     public int? Wage { get; set; }
 
-    [Required]
-    public DateTime? DateApply { get; set; }
-
-    [Required]
+    public DateApply? DateApply { get; set; }
     public int? NumberOfDependents { get; set; }
-
-    [Required]
     public TypeOfInsurance? TypeOfInsurance { get; set; }
     public int? OtherSalary { get; set; }
 
-    [Required]
     public Zone? Zone { get; set;}
-
-    [Required]
     public TypePayroll? Type { get; set; }
 
 }

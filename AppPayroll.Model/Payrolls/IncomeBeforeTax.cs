@@ -2,6 +2,7 @@
 
 public class IncomeBeforeTax
 {
+    public double IncomeBeforeTaxProterty { get; set; }
     // Giảm trừ gia cảnh bản thân 
     public int PersonalSituation { get; set; }
 

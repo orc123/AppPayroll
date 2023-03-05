@@ -12,5 +12,5 @@ public class PayrollResponseDto
     public IncomeTaxes IncomeTaxes { get; set; }
 
     // Lương NET
-    public int NetSalary { get; set; }
+    public double NetSalary { get; set; }
 }

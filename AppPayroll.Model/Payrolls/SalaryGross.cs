@@ -3,12 +3,12 @@
 public class SalaryGross
 {
     // Bảo hiểm xã hội
-    public int SocialInsurance { get; set; }
+    public double SocialInsurance { get; set; }
 
     // Baỏ hiểm y tế
-    public int HealthInsurance { get; set; }
+    public double HealthInsurance { get; set; }
 
     // Bảo hiểm thất nghiệp
-    public int UnemploymentInsurance { get; set; }
+    public double UnemploymentInsurance { get; set; }
 
 }

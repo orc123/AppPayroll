@@ -156,7 +156,7 @@ public class PayrollSerivceTest
     {
         return new PayrollRequestDto()
         {
-            DateApply = DateTime.Now,
+            DateApply = DateApply.CURRENT,
             NumberOfDependents = 0,
             OtherSalary = 0,
             Type = Model.Enums.TypePayroll.NetToGross,

@@ -1,4 +1,6 @@
 using AppPayroll;
+using AppPayroll.Service.Implatation;
+using AppPayroll.Service.Interfaces;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -13,6 +15,8 @@ namespace AppPayroll
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
+            builder.Services.AddScoped<IPayrollSerivce, PayrollSerivce>();
 
             await builder.Build().RunAsync();
         }

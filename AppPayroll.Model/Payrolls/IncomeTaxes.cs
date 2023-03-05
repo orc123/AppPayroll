@@ -2,5 +2,6 @@
 
 public class IncomeTaxes
 {
-    public int PersonalIncomeTax { get; set; }
+    public double IncomeTaxesProperty { get; set; }
+    public double PersonalIncomeTax { get; set; }
 }

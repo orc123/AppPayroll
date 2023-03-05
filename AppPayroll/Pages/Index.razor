@@ -1,9 +1,76 @@
 ﻿@page "/"
+@using AppPayroll.Model.Payrolls;
+@using AppPayroll.Model.Enums;
+@using AppPayroll.Service.Interfaces;
 
-<PageTitle>Index</PageTitle>
+@inject IPayrollSerivce payrollService;
 
-<h1>Hello, world!</h1>
+<div class="row">
+    <h2 class="text-success">Công cụ tính lương Gross sang Net / Net sang Gross chuẩn 2023</h2>
 
-Welcome to your new app.
+    <br />
+    <br />
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+    <p>
+        Áp dụng mức giảm trừ gia cảnh mới nhất 11 triệu đồng/tháng (132 triệu đồng/năm) với nguời nộp thuế và 4,4 triệu đồng/tháng với mỗi người phụ thuộc (Theo Nghị quyết số 954/2020/UBTVQH14)
+    </p>
+    <p>
+        Áp dụng mức lương tối thiểu vùng mới nhất có hiệu lực từ ngày 01/07/2022 (Theo điều 3, Nghị định 38/2022/NĐ-CP)
+    </p>
+
+    @if (payrollRequestDto != null)
+    {
+        <EditForm Model="payrollRequestDto">
+            <div class="form-group">
+                <b>Áp dụng quy định:</b> <br />
+                <InputRadioGroup class="form-control" @bind-Value="payrollRequestDto.DateApply">
+                    <InputRadio Value="DateApply.CURRENT" />Từ 01/07/2022 (Mới nhất) <br />
+                    <InputRadio Value="DateApply.PAST" />Từ 01/07/2020 - 30/06/2022
+                </InputRadioGroup>
+                <br />
+                Lương cơ sở: 1.490.000đ Giảm trừ gia cảnh bản thân: 11.000.000đ Người phụ thuộc: 4.400.000đ
+            </div>
+            <div class="form-group">
+                <b>Thu nhập</b>
+                <InputNumber class="form-control" @bind-Value="payrollRequestDto.Wage"></InputNumber>
+            </div>
+            <div class="form-group">
+                <b>Mức lương đóng bảo hiểm:</b> <br />
+                <InputRadioGroup class="form-control" @bind-Value="payrollRequestDto.TypeOfInsurance">
+                    <InputRadio Value="TypeOfInsurance.OnOfficialSalary" />Trên Lương chính thức <br />
+                    <InputRadio Value="TypeOfInsurance.Other" /> Khác <br />
+                    <InputNumber type="number" disabled="@(payrollRequestDto.TypeOfInsurance == TypeOfInsurance.OnOfficialSalary)" class="form-control" @bind-Value="payrollRequestDto.OtherSalary"></InputNumber>
+                </InputRadioGroup>
+                <br />
+            </div>
+
+            <div class="form-group">
+                <b>Vùng:</b> <br />
+                <InputRadioGroup class="form-control" @bind-Value="payrollRequestDto.Zone">
+                    <InputRadio Value="Zone.I" /> I <br />
+                    <InputRadio Value="Zone.II" /> II <br />
+                    <InputRadio Value="Zone.III" /> III <br />
+                    <InputRadio Value="Zone.IV" /> IV <br />
+                </InputRadioGroup>
+                <br />
+            </div>
+
+            <div class="form-group">
+                <b>Số người phụ thuộc</b>
+                <InputNumber class="form-control" @bind-Value="payrollRequestDto.NumberOfDependents"></InputNumber>
+            </div>
+
+            <div class="form-group">
+                <button class="btn btn-primary" @onclick="async () => await SubmitPayrollRequest(TypePayroll.GrossToNet)">GROSS -> NET</button>
+                <button class="btn btn-primary" @onclick="async () => await SubmitPayrollRequest(TypePayroll.NetToGross)">NET -> GROSS</button>
+            </div>
+        </EditForm>
+    }
+</div>
+
+@if (ShowResult && result != null)
+{ 
+    <table>
+
+    </table>
+}

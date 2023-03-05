@@ -7,13 +7,50 @@ public class PayrollSerivce : IPayrollSerivce
 {
     public async Task<ResultModel<PayrollResponseDto>> SaralyPayrollAsync(PayrollRequestDto payrollRequestDto)
     {
+        PayrollResponseDto payrollResponseDto = new PayrollResponseDto()
+        {
+            IncomeBeforeTax = new(),
+            IncomeTaxes = new(),
+            SalaryGross = new(),
+            NetSalary = 0
+        };
         var validate = ValidateModel(payrollRequestDto);
         if (validate != null)
         {
             return new ResultModel<PayrollResponseDto>(validate);
         }
 
-        return new ResultModel<PayrollResponseDto>(new PayrollResponseDto());
+        double grossSalary = 0;
+        double netSalary = 0;
+
+        if (payrollRequestDto.Type == Model.Enums.TypePayroll.GrossToNet)
+        {
+            grossSalary = payrollRequestDto.Wage.Value;
+            payrollResponseDto.SalaryGross.SocialInsurance = grossSalary * 8 / 100;
+            payrollResponseDto.SalaryGross.HealthInsurance = grossSalary * 1.5 / 100;
+            payrollResponseDto.SalaryGross.UnemploymentInsurance = grossSalary * 1 / 100;
+
+            payrollResponseDto.IncomeBeforeTax.IncomeBeforeTaxProterty =
+                grossSalary - (payrollResponseDto.SalaryGross.SocialInsurance + payrollResponseDto.SalaryGross.HealthInsurance /
+                +payrollResponseDto.SalaryGross.UnemploymentInsurance);
+
+            payrollResponseDto.IncomeBeforeTax.PersonalSituation = 11000000;
+            payrollResponseDto.IncomeBeforeTax.DependentsFamily = payrollRequestDto.NumberOfDependents.Value * 44000000;
+
+            payrollResponseDto.IncomeTaxes.IncomeTaxesProperty =
+                payrollResponseDto.IncomeBeforeTax.IncomeBeforeTaxProterty - payrollResponseDto.IncomeBeforeTax.PersonalSituation - payrollResponseDto.IncomeBeforeTax.DependentsFamily
+                 > 0 ? payrollResponseDto.IncomeBeforeTax.IncomeBeforeTaxProterty - payrollResponseDto.IncomeBeforeTax.PersonalSituation - payrollResponseDto.IncomeBeforeTax.DependentsFamily : 0; 
+
+
+        }
+        else
+        {
+            netSalary = payrollRequestDto.Wage.Value;
+
+            payrollResponseDto.NetSalary = netSalary;
+        }
+
+        return new ResultModel<PayrollResponseDto>(payrollResponseDto);
     }
 
     private static ErrorModel? ValidateModel(PayrollRequestDto payrollRequestDto)
